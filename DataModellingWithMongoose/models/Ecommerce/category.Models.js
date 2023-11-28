@@ -6,6 +6,16 @@ const categorySchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    // contributed by me
+    description: {
+      type: String,
+      required: true,
+    },
+    parentCategory: {
+      type: String,
+      required: true,
+      unique: true,
+    },
   },
   { timestamps: true }
 );
