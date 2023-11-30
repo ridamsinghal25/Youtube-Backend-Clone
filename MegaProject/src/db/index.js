@@ -15,4 +15,19 @@ const connectDB = async () => {
   }
 };
 
+// Contributed by me
+
+const connectDB2 = async () => {
+  await mongoose
+    .connect(`${process.env.MONGO_URI}`)
+    .then((connectionInstance) => {
+      console.log(
+        `\n MongoDB connected TWO !! DB HOST: ${connectionInstance.connection.host}`
+      );
+    })
+    .catch((err) => {
+      console.log("MongoDB connection FAILED: ", err);
+    });
+};
+
 export default connectDB;
