@@ -5,14 +5,18 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
 const generateAccessTokenAndRefreshToken = async (userId) => {
-  const user = User.findById(userId);
-  const accessToken = user.generateAccessToken();
-  const refreshToken = user.generateRefreshToke();
+  try {
+    const user = User.findById(userId);
+    const accessToken = user.generateAccessToken();
+    const refreshToken = user.generateRefreshToke();
 
-  user.refreshToken = refreshToken;
-  await user.save({ validateBeforeSave: false });
+    user.refreshToken = refreshToken;
+    await user.save({ validateBeforeSave: false });
 
-  return { accessToken, refreshToken };
+    return { accessToken, refreshToken };
+  } catch (error) {
+    throw new ApiError(500, "Error while generating access and refresh token");
+  }
 };
 
 const registerUser = asyncHandler(async (req, res) => {
@@ -129,7 +133,9 @@ const loginUser = asyncHandler(async (req, res) => {
     user._id
   );
 
-  const loggedInUser = await User.findById(user._id);
+  const loggedInUser = await User.findById(user._id).select(
+    "-password -refreshToken"
+  );
 
   const options = {
     httpOnly: true,
@@ -153,4 +159,29 @@ const loginUser = asyncHandler(async (req, res) => {
     );
 });
 
-export { registerUser, loginUser };
+const logoutUser = asyncHandler(async (req, res) => {
+  await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      $set: {
+        refreshToken: undefined,
+      },
+    },
+    {
+      new: true,
+    }
+  );
+
+  const options = {
+    httpOnly: true,
+    secure: true,
+  };
+
+  res
+    .status(200)
+    .clearCookie("accessToken", options)
+    .clearCookie("refreshToken", options)
+    .json(new ApiResponse(200, {}, "user logout successfully"));
+});
+
+export { registerUser, loginUser, logoutUser };
