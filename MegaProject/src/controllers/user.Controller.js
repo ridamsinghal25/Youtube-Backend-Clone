@@ -142,7 +142,7 @@ const loginUser = asyncHandler(async (req, res) => {
     secure: true,
   };
 
-  res
+  return res
     .status(200)
     .cookie("accessToken", accessToken, options)
     .cookie("refreshToken", refreshToken, options)
@@ -177,7 +177,7 @@ const logoutUser = asyncHandler(async (req, res) => {
     secure: true,
   };
 
-  res
+  return res
     .status(200)
     .clearCookie("accessToken", options)
     .clearCookie("refreshToken", options)
