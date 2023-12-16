@@ -160,6 +160,11 @@ const loginUser = asyncHandler(async (req, res) => {
 });
 
 const logoutUser = asyncHandler(async (req, res) => {
+  // Steps to logout user
+  // collect user id from middleware
+  // clear the cookie
+  // set refreshToken to undefined
+
   await User.findByIdAndUpdate(
     req.user._id,
     {
