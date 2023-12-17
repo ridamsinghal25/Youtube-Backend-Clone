@@ -6,9 +6,11 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 
 const generateAccessTokenAndRefreshToken = async (userId) => {
   try {
-    const user = User.findById(userId);
+    const user = await User.findById(userId);
     const accessToken = user.generateAccessToken();
-    const refreshToken = user.generateRefreshToke();
+    const refreshToken = user.generateRefreshToken();
+
+    // if (accessToken && refreshToken) console.log("token are coming");
 
     user.refreshToken = refreshToken;
     await user.save({ validateBeforeSave: false });
@@ -129,9 +131,11 @@ const loginUser = asyncHandler(async (req, res) => {
     throw new ApiError(401, "Invalid password");
   }
 
-  const { accessToken, refreshToken } = generateAccessTokenAndRefreshToken(
-    user._id
-  );
+  const { accessToken, refreshToken } =
+    await generateAccessTokenAndRefreshToken(user._id);
+
+  // console.log("access: l ", accessToken);
+  // console.log("refresh: l ", refreshToken);
 
   const loggedInUser = await User.findById(user._id).select(
     "-password -refreshToken"
