@@ -330,7 +330,79 @@ const updateUserAccountDetails = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, "user account updated successfully"));
+    .json(new ApiResponse(200, user, "user account updated successfully"));
+});
+
+const updateUserAvatar = asyncHandler(async (req, res) => {
+  // steps to update use avatar
+  // take user avatar file
+  // validate it
+  // upload to cloudinary
+  // validate cloudinary url
+  // find user and update its avatar
+  // response
+
+  const avatarLocalPath = req.file?.path;
+
+  if (!avatarLocalPath) {
+    throw new ApiError(400, "Avatar file is required");
+  }
+
+  const avatar = await uploadOnCloudinary(avatarLocalPath);
+
+  if (!avatar.url) {
+    throw new ApiError(400, "Error while uploading file on cloudinary");
+  }
+
+  const user = await User.findByIdAndUpdate(
+    req.user?._id,
+    {
+      $set: {
+        avatar: avatar.url,
+      },
+    },
+    { new: true }
+  ).select("-password");
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, user, "Avatar file updated successfully"));
+});
+
+const updateUserCoverImage = asyncHandler(async (req, res) => {
+  // steps to update use CoverImage
+  // take user CoverImage file
+  // validate it
+  // upload to cloudinary
+  // validate cloudinary url
+  // find user and update its CoverImage
+  // response
+
+  const coverImageLocalPath = req.file?.path;
+
+  if (!coverImageLocalPath) {
+    throw new ApiError(400, "Avatar file is required");
+  }
+
+  const coverImage = await uploadOnCloudinary(coverImageLocalPath);
+
+  if (!coverImage.url) {
+    throw new ApiError(400, "Error while uploading file on cloudinary");
+  }
+
+  const user = await User.findByIdAndUpdate(
+    req.user?._id,
+    {
+      $set: {
+        coverImage: coverImage.url,
+      },
+    },
+    { new: true }
+  ).select("-password");
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, user, "coverImage file updated successfully"));
 });
 
 export {
@@ -340,4 +412,7 @@ export {
   refreshAccessToken,
   changeUserPassword,
   getCurrentUserDetails,
+  updateUserAccountDetails,
+  updateUserAvatar,
+  updateUserCoverImage,
 };
