@@ -247,4 +247,97 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     );
 });
 
-export { registerUser, loginUser, logoutUser, refreshAccessToken };
+const changeUserPassword = asyncHandler(async (req, res) => {
+  /*
+    // Only login user can change password
+    // verify user from the verifyJWT middleware
+  */
+
+  // steps to change user password
+  // take user old and new password
+  // validate not empty
+  // find user so that you can check it exists
+  // validate user
+  // check old password with the password saved in database
+  // set new password as the user password
+  // save user password
+  // response
+
+  const { oldPassword, newPassword } = req.body;
+
+  if (!oldPassword && !newPassword) {
+    throw new ApiError(400, "All fields are required");
+  }
+
+  // since we verify user using jwt middleware
+  // it return us a req.user = user
+  const user = await User.findById(req.user._id);
+
+  if (!user) {
+    throw new ApiError(400, "user does not exists");
+  }
+
+  const isPasswordCorrect = user.isPasswordCorrect(oldPassword);
+
+  if (!isPasswordCorrect) {
+    throw new ApiError(400, "Invalid password");
+  }
+
+  user.password = newPassword;
+  await user.save({ validateBeforeSave: false });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "Password changed successfully"));
+});
+
+const getCurrentUserDetails = asyncHandler(async (req, res) => {
+  // we only want that only login user can there details so
+  // we will run verifyJWT middleware before routing it so
+  // from there we will get the user object
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, user, "user fetched successfully"));
+});
+
+const updateUserAccountDetails = asyncHandler(async (req, res) => {
+  // steps to update user details
+  // collet information to be updated
+  // validate - not empty
+  // user find (get user details from verifyJWT middleware)
+  // and update
+  // remove password and any other things
+  // response
+
+  const { fullName, email } = req.body;
+
+  if (!fullName || !email) {
+    // agar fullName nahi hai toh execute hona or agar email nahi hai toh execute hona
+    throw new ApiError(400, "All fields are required");
+  }
+
+  await User.findByIdAndUpdate(
+    req.user?._id,
+    {
+      $set: {
+        fullName,
+        email,
+      },
+    },
+    { new: true }
+  ).select("-password");
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, "user account updated successfully"));
+});
+
+export {
+  registerUser,
+  loginUser,
+  logoutUser,
+  refreshAccessToken,
+  changeUserPassword,
+  getCurrentUserDetails,
+};
