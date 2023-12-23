@@ -92,6 +92,21 @@ const registerUser = asyncHandler(async (req, res) => {
     username: username.toLowerCase(),
   });
 
+  // const user = await User.create({
+  //   fullName,
+  //   avatar:{
+  //   publicId: avatar.publicId,
+  //   url: avatar.url
+  //   }
+  //   coverImage:{
+  //   publicId: coverImage.publicId,
+  //   url:  coverImage.url
+  //   }
+  //   email,
+  //   password,
+  //   username: username.toLowerCase(),
+  // });
+
   const createdUser = await User.findById(user._id).select(
     "-password -refreshToken"
   );
