@@ -76,7 +76,7 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 
   const avatar = await uploadOnCloudinary(avatarLocalPath);
-
+  console.log(avatar);
   const coverImage = await uploadOnCloudinary(coverImageLocalPath);
 
   if (!avatar) {
@@ -85,8 +85,14 @@ const registerUser = asyncHandler(async (req, res) => {
 
   const user = await User.create({
     fullName,
-    avatar: avatar.url,
-    coverImage: coverImage?.url || "",
+    avatar: {
+      public_id: avatar.public_id,
+      url: avatar.url,
+    },
+    coverImage: {
+      public_id: coverImage.public_id,
+      url: coverImage.url || "",
+    },
     email,
     password,
     username: username.toLowerCase(),
