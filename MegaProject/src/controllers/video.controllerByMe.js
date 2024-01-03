@@ -14,9 +14,9 @@ const uploadVideo = asyncHandler(async (req, res) => {
   // verify if uploaded on cloudinary properly
   // create video
 
-  const { title, description, duration } = req.body;
+  const { title, description } = req.body;
 
-  if ([title, description, duration].some((field) => field === "")) {
+  if ([title, description].some((field) => field === "")) {
     throw new ApiError(400, "All fields are required");
   }
 
@@ -38,13 +38,14 @@ const uploadVideo = asyncHandler(async (req, res) => {
   if (!videoFile || !thumbnail) {
     throw new ApiError(400, "Error while uploading on cloudinary");
   }
+  console.log(videoFile);
 
   const video = await Video.create({
     videoFile: videoFile.url,
     thumbnail: thumbnail.url,
     title,
     description,
-    duration,
+    duration: videoFile.duration,
   });
 
   if (!video) {
