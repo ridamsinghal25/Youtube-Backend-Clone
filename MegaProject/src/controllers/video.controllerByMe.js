@@ -3,6 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { Video } from "../models/video.Model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import mongoose from "mongoose";
 
 const uploadVideo = asyncHandler(async (req, res) => {
   // steps to upload video
@@ -13,6 +14,7 @@ const uploadVideo = asyncHandler(async (req, res) => {
   // uplooad to cloudinary
   // verify if uploaded on cloudinary properly
   // create video
+  // check if video is created
 
   const { title, description } = req.body;
 
@@ -38,7 +40,7 @@ const uploadVideo = asyncHandler(async (req, res) => {
   if (!videoFile || !thumbnail) {
     throw new ApiError(400, "Error while uploading on cloudinary");
   }
-  console.log(videoFile);
+  console.log("videoFile: ", videoFile);
 
   const video = await Video.create({
     videoFile: videoFile.url,

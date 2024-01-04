@@ -1,4 +1,5 @@
 import { v2 as cloudinary } from "cloudinary";
+import { log } from "console";
 import fs from "fs";
 
 cloudinary.config({
@@ -28,16 +29,16 @@ const uploadOnCloudinary = async (localFilePath) => {
   }
 };
 
-const deleteFromCloudinary = async (publicId) => {
+const deleteFromCloudinary = async (publicId, resourceType = "image") => {
   try {
     if (!publicId) return null;
 
     // delete from cloudinary
-    const response = await cloudinary.v2.uploader.destroy(publicId, {
-      resource_type: "auto",
+    const response = await cloudinary.uploader.destroy(publicId, {
+      resource_type: resourceType,
     });
-    console.log(response);
-    console.log("file delete successfully");
+    console.log("Response: ", response);
+    console.log("file delete successfully in cloudinar.js");
 
     return response;
   } catch (error) {
