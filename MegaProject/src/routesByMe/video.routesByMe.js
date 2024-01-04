@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.Middleware.js";
-import { uploadVideo } from "../controllers/video.controllerByMe.js";
+import { uploadVideo } from "../controllersByMe/video.controllerByMe.js";
 
 const router = Router();
 

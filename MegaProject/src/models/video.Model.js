@@ -8,8 +8,14 @@ const videoSchema = new Schema(
       required: [true, "videoFile is required"],
     },
     thumbnail: {
-      type: String, // cloudinary
-      required: [true, "thumbnail is required"],
+      public_id: {
+        type: String, // cloudinary
+        required: [true, "thumbnail public_id is required"],
+      },
+      url: {
+        type: String, // cloudinary
+        required: [true, "thumbnail url is required"],
+      },
     },
     title: {
       type: String,

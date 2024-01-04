@@ -5,6 +5,12 @@ import { Video } from "../models/video.Model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import mongoose from "mongoose";
 
+// Upload Video
+// Delete Video
+// Update Video
+// Get Video Details
+// Update Video Thumbnail
+
 const uploadVideo = asyncHandler(async (req, res) => {
   // steps to upload video
   // take video details
@@ -40,14 +46,22 @@ const uploadVideo = asyncHandler(async (req, res) => {
   if (!videoFile || !thumbnail) {
     throw new ApiError(400, "Error while uploading on cloudinary");
   }
-  console.log("videoFile: ", videoFile);
+  // console.log("videoFile: ", videoFile);
+  // console.log("thumbnail: ", thumbnail);
+
+  // want to see how to create owner
+  let owner = req.user?._id;
 
   const video = await Video.create({
     videoFile: videoFile.url,
-    thumbnail: thumbnail.url,
+    thumbnail: {
+      public_id: thumbnail.public_id,
+      url: thumbnail.url,
+    },
     title,
     description,
     duration: videoFile.duration,
+    // owner: owner,
   });
 
   if (!video) {
@@ -59,4 +73,6 @@ const uploadVideo = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, video, "video uploaded successfully"));
 });
 
-export { uploadVideo };
+const deleteVideo = asyncHandler(async (req, res) => {});
+
+export { uploadVideo, deleteVideo };
