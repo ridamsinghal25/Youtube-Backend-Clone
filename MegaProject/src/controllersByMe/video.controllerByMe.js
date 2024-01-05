@@ -118,13 +118,54 @@ const deleteVideo = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Error while deleting file from cloudinary");
   }
 
-  const del = await deletedVideo.deleteOne();
+  const deletemsg = await deletedVideo.deleteOne();
 
-  console.log("deleted: ", del);
+  console.log("deleted: ", deletemsg);
 
   return res
     .status(200)
     .json(new ApiResponse(200, {}, "video deleted successfully"));
 });
 
-export { uploadVideo, deleteVideo };
+const updateVideoDetails = asyncHandler(async (req, res) => {
+  // Steps to update video details
+  // take video id from req.params
+  // validate it - not empty
+  // take video title and description from req.body
+  // validate - not empty
+  // call findByIdAndUpdate() method
+  // validate it
+  // response
+
+  const videoId = req.params._id;
+  const { title, description } = req.body;
+
+  if (!videoId) {
+    throw new ApiError(400, "videoId is required");
+  }
+
+  if (!title || !description) {
+    throw new ApiError(400, "All fields are required");
+  }
+
+  const video = await Video.findByIdAndUpdate(
+    videoId,
+    {
+      $set: {
+        title,
+        description,
+      },
+    },
+    { new: true }
+  );
+
+  if (!video) {
+    throw new ApiError(400, "Error while updating video");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, video, "video updated successfully"));
+});
+
+export { uploadVideo, deleteVideo, updateVideoDetails };
