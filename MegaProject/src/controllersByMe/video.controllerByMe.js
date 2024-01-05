@@ -193,4 +193,81 @@ const getVideoDetails = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, video, "video details fetched successfully"));
 });
 
-export { uploadVideo, deleteVideo, updateVideoDetails, getVideoDetails };
+const updateVideoThumbnail = asyncHandler(async (req, res) => {
+  // Steps to update video thumbnail
+  // take video it from req.params
+  // validate it
+  // take file from system
+  // upload to cloudinary
+  // find user using id
+  // take old thumbnail public_id for deleting
+  // update user
+  // delete old thumbnail from cloudinary
+  // response
+
+  const videoId = req.params.videoId;
+
+  if (!videoId) {
+    throw new ApiError(400, "video id is required");
+  }
+
+  const thumbnailLocalPath = req.file?.path;
+
+  if (!thumbnailLocalPath) {
+    throw new ApiError(400, "thumbnail file is required");
+  }
+
+  const uploadThumbnail = await uploadOnCloudinary(thumbnailLocalPath);
+
+  if (!uploadThumbnail.url || !uploadThumbnail.public_id) {
+    throw new ApiError(400, "Error while uploading on cloudinary");
+  }
+
+  const video = await Video.findById(videoId);
+
+  if (!video) {
+    throw new ApiError(404, "video not found");
+  }
+
+  const oldThumbnailPublicId = video.thumbnail?.public_id;
+
+  if (!oldThumbnailPublicId) {
+    throw new ApiError(404, "thumbnail public_id not found");
+  }
+
+  const updatedVideo = await Video.updateOne(
+    { _id: videoId },
+    {
+      $set: {
+        thumbnail: {
+          public_id: uploadThumbnail.public_id,
+          url: uploadThumbnail.url,
+        },
+      },
+    }
+  );
+
+  if (!updatedVideo) {
+    throw new ApiError(400, "Error while updating file");
+  }
+
+  const deleteThumbnail = await deleteFromCloudinary(oldThumbnailPublicId);
+
+  if (!deleteThumbnail) {
+    throw new ApiError(400, "Error while deleting file from cloudinary");
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, updatedVideo, "video thumbnail updated successfully")
+    );
+});
+
+export {
+  uploadVideo,
+  deleteVideo,
+  updateVideoDetails,
+  getVideoDetails,
+  updateVideoThumbnail,
+};

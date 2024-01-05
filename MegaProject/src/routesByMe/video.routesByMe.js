@@ -5,6 +5,7 @@ import {
   deleteVideo,
   getVideoDetails,
   updateVideoDetails,
+  updateVideoThumbnail,
   uploadVideo,
 } from "../controllersByMe/video.controllerByMe.js";
 
@@ -30,5 +31,9 @@ router.route("/delete-video/:videoId").delete(verifyJWT, deleteVideo);
 router.route("/update-video/:videoId").patch(verifyJWT, updateVideoDetails);
 
 router.route("/video-details/:videoId").get(verifyJWT, getVideoDetails);
+
+router
+  .route("/update-video-thumbnail/:videoId")
+  .patch(verifyJWT, upload.single("thumbnail"), updateVideoThumbnail);
 
 export default router;
