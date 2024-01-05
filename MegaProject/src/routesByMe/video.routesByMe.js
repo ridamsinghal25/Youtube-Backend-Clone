@@ -3,6 +3,7 @@ import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.Middleware.js";
 import {
   deleteVideo,
+  getVideoDetails,
   updateVideoDetails,
   uploadVideo,
 } from "../controllersByMe/video.controllerByMe.js";
@@ -24,8 +25,10 @@ router.route("/upload-video").post(
   uploadVideo
 );
 
-router.route("/delete-video/:_id").delete(verifyJWT, deleteVideo);
+router.route("/delete-video/:videoId").delete(verifyJWT, deleteVideo);
 
-router.route("/update-video/:_id").patch(verifyJWT, updateVideoDetails);
+router.route("/update-video/:videoId").patch(verifyJWT, updateVideoDetails);
+
+router.route("/video-details/:videoId").get(verifyJWT, getVideoDetails);
 
 export default router;

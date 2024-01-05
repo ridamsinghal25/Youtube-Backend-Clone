@@ -88,7 +88,7 @@ const deleteVideo = asyncHandler(async (req, res) => {
   // delete video from database manually
   // response
 
-  const videoId = req.params._id;
+  const videoId = req.params.videoId;
 
   if (!videoId) {
     throw new ApiError(400, "video id is required");
@@ -137,7 +137,7 @@ const updateVideoDetails = asyncHandler(async (req, res) => {
   // validate it
   // response
 
-  const videoId = req.params._id;
+  const videoId = req.params.videoId;
   const { title, description } = req.body;
 
   if (!videoId) {
@@ -168,4 +168,29 @@ const updateVideoDetails = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, video, "video updated successfully"));
 });
 
-export { uploadVideo, deleteVideo, updateVideoDetails };
+const getVideoDetails = asyncHandler(async (req, res) => {
+  // Steps to get video details
+  // take videoId of the video
+  // validate it
+  // find video using findById() method
+  // validate it
+  // response
+
+  const videoId = req.params.videoId;
+
+  if (!videoId) {
+    throw new ApiError(400, "videoId is required");
+  }
+
+  const video = await Video.findById(videoId);
+
+  if (!video) {
+    throw new ApiError(404, "video not found");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, video, "video details fetched successfully"));
+});
+
+export { uploadVideo, deleteVideo, updateVideoDetails, getVideoDetails };
