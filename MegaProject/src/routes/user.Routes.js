@@ -11,8 +11,8 @@ import {
   updateUserAccountDetails,
   updateUserAvatar,
   updateUserCoverImage,
-} from "../controllers/user.Controller.js";
-import { upload } from "../middlewares/multer.Middleware.js";
+} from "../controllers/user.controller.js";
+import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 
 const router = Router();

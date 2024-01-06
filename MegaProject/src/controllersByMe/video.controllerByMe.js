@@ -4,7 +4,7 @@ import {
   deleteFromCloudinary,
   uploadOnCloudinary,
 } from "../utils/cloudinary.js";
-import { Video } from "../models/video.Model.js";
+import { Video } from "../models/video.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import mongoose from "mongoose";
 
@@ -306,3 +306,6 @@ export {
   getVideoDetails,
   updateVideoThumbnail,
 };
+
+// getVideoDetails aggregation pipeline $addFields(owner)
+// updateVideoThumbnail 2 database query
