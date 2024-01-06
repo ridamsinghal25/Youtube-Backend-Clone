@@ -11,7 +11,7 @@ import {
 
 const router = Router();
 
-router.route("/upload-video").post(
+router.route("/upload-video/").post(
   verifyJWT,
   upload.fields([
     {

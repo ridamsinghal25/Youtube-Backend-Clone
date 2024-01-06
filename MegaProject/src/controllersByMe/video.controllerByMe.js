@@ -52,9 +52,6 @@ const uploadVideo = asyncHandler(async (req, res) => {
   // console.log("videoFile: ", videoFile);
   // console.log("thumbnail: ", thumbnail);
 
-  // want to see how to create owner
-  // let owner = req.user?._id;
-
   const video = await Video.create({
     videoFile: {
       public_id: videoFile.public_id,
@@ -67,7 +64,6 @@ const uploadVideo = asyncHandler(async (req, res) => {
     title,
     description,
     duration: videoFile.duration,
-    // owner: owner,
   });
 
   if (!video) {
@@ -182,15 +178,54 @@ const getVideoDetails = asyncHandler(async (req, res) => {
     throw new ApiError(400, "videoId is required");
   }
 
-  const video = await Video.findById(videoId);
+  let videoDetails = await Video.aggregate([
+    {
+      $match: {
+        _id: new mongoose.Types.ObjectId(videoId),
+      },
+    },
+    {
+      $addFields: {
+        owner: new mongoose.Types.ObjectId(req.user._id),
+      },
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "owner",
+        foreignField: "_id",
+        as: "owner",
+        pipeline: [
+          {
+            $project: {
+              _id: 1,
+              username: 1,
+              fullName: 1,
+              email: 1,
+            },
+          },
+        ],
+      },
+    },
+    {
+      $addFields: {
+        owner: {
+          $first: "$owner",
+        },
+      },
+    },
+  ]);
 
-  if (!video) {
+  if (!videoDetails) {
     throw new ApiError(404, "video not found");
   }
+  console.log("videoDetails: ", videoDetails);
 
   return res
     .status(200)
-    .json(new ApiResponse(200, video, "video details fetched successfully"));
+    .json(
+      new ApiResponse(200, videoDetails, "video details fetched successfully")
+    );
 });
 
 const updateVideoThumbnail = asyncHandler(async (req, res) => {
