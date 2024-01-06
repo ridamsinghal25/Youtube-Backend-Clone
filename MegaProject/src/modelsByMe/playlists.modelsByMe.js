@@ -13,12 +13,12 @@ const playlistsSchema = new Schema(
     },
     videos: [
       {
-        type: mongoose.Schema.Types.ObjectId,
+        type: Schema.Types.ObjectId,
         ref: "Video",
       },
     ],
     owner: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "User",
     },
   },

@@ -1,9 +1,9 @@
-import mongoose, { Schema, mongo } from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const tweetsSchema = new Schema(
   {
     owner: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       ref: "User",
     },
     content: {
