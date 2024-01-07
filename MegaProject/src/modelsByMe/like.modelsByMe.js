@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 
-const likesSchema = new Schema(
+const likeSchema = new Schema(
   {
     comment: {
       type: Schema.Types.ObjectId,
@@ -22,4 +22,4 @@ const likesSchema = new Schema(
   { timestamps: true }
 );
 
-export const Like = mongoose.model("Like", likesSchema);
+export const Like = mongoose.model("Like", likeSchema);
