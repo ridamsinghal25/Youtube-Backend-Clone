@@ -64,6 +64,7 @@ const uploadVideo = asyncHandler(async (req, res) => {
     title,
     description,
     duration: videoFile.duration,
+    owner: req.user._id,
   });
 
   if (!video) {
@@ -182,11 +183,6 @@ const getVideoDetails = asyncHandler(async (req, res) => {
     {
       $match: {
         _id: new mongoose.Types.ObjectId(videoId),
-      },
-    },
-    {
-      $addFields: {
-        owner: new mongoose.Types.ObjectId(req.user._id),
       },
     },
     {
