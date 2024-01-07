@@ -3,6 +3,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { Video } from "../models/video.model.js";
 import { Like } from "../modelsByMe/like.modelsByMe.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import mongoose, { isValidObjectId } from "mongoose";
 
 const toggleVideoLike = asyncHandler(async (req, res) => {
   // Steps to like video
@@ -15,9 +16,14 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
   // then response
 
   const { videoId } = req.params;
+  const userId = req.user._id;
 
   if (!videoId) {
     throw new ApiError(404, "videoId is required");
+  }
+
+  if (!isValidObjectId(videoId) || !isValidObjectId(userId)) {
+    throw new ApiError(400, "Invalid object id");
   }
 
   const video = await Video.findById(videoId);
@@ -28,13 +34,13 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
 
   const likeExists = await Like.findOne({
     video: videoId,
-    likedBy: req.user._id,
+    likedBy: userId,
   });
 
   if (!likeExists) {
     const likingVideo = await Like.create({
       video: videoId,
-      likedBy: req.user._id,
+      likedBy: userId,
     });
 
     if (!likingVideo) {
