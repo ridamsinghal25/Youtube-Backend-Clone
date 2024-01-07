@@ -68,7 +68,7 @@ const updateComment = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Invalid comment id");
   }
 
-  const updatedComment = await Comment.findByIdAndUpdate(
+  const comment = await Comment.findByIdAndUpdate(
     commentId,
     {
       $set: {
@@ -78,16 +78,44 @@ const updateComment = asyncHandler(async (req, res) => {
     { new: true }
   );
 
-  if (!updatedComment) {
-    throw new ApiError(404, "Error while updating comment");
+  if (!comment) {
+    throw new ApiError(404, "comment not found");
   }
 
   return res
     .status(200)
-    .json(new ApiResponse(200, updatedComment, "comment updated successfully"));
+    .json(new ApiResponse(200, comment, "comment updated successfully"));
 });
 
-export { addComment, updateComment };
+const deleteComment = asyncHandler(async (req, res) => {
+  // Steps to delete comment
+  // take comment id from req.params
+  // validate it
+  // use findByIdAndDelete() method to delete comment
+  // response
+
+  const { commentId } = req.params;
+
+  if (!commentId) {
+    throw new ApiError(404, "comment id is required");
+  }
+
+  if (!isValidObjectId(commentId)) {
+    throw new ApiError(400, "Invalid comment id");
+  }
+
+  const comment = await Comment.findByIdAndDelete(commentId);
+
+  if (!comment) {
+    throw new ApiError(400, "comment not found");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "comment deleted successfully"));
+});
+
+export { addComment, updateComment, deleteComment };
 
 // add comment to videos using
 // video.comments.push(newComment._id);

@@ -51,7 +51,11 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
       .status(200)
       .json(new ApiResponse(200, likingVideo, "video liked successfully"));
   } else {
-    await likeExists.deleteOne();
+    const deleteLike = await likeExists.deleteOne();
+
+    if (!deleteLike) {
+      throw new ApiError(404, "Error while deleting like");
+    }
 
     return res
       .status(200)
