@@ -54,3 +54,41 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
 });
 
 export { toggleVideoLike };
+
+// const handleLikes = asyncHandler(async (req, res) => {
+//   const { videoId } = req.params;
+
+//   try {
+//       // Aggregate pipeline to fetch all likes for the specified video and populate 'likedBy' field
+//       const likes = await Like.aggregate([
+//           {
+//               $match: { video: mongoose.Types.ObjectId(videoId) }
+//           },
+//           {
+//               $lookup: {
+//                   from: 'users', // Assuming your User model is stored in a collection named 'users'
+//                   localField: 'likedBy',
+//                   foreignField: '_id',
+//                   as: 'likedByDetails'
+//               }
+//           },
+//           {
+//               $unwind: '$likedByDetails'
+//           },
+//           {
+//               $project: {
+//                   _id: 1,
+//                   video: 1,
+//                   likedBy: '$likedByDetails._id',
+//                   username: '$likedByDetails.username',
+//                   createdAt: 1
+//               }
+//           }
+//       ]);
+
+//       return res.json({ success: true, likes });
+//   } catch (error) {
+//       console.error(error);
+//       return res.status(500).json({ success: false, message: 'Internal Server Error' });
+//   }
+// });
