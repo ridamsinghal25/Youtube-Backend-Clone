@@ -115,7 +115,60 @@ const deleteComment = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "comment deleted successfully"));
 });
 
-export { addComment, updateComment, deleteComment };
+const getVideoComments = asyncHandler(async (req, res) => {
+  // Steps to get all video comments
+  // take videoId from req.params
+  // take queries from req.query
+  // use mongoose exists() to check if video exists
+  // Now, use mongodb aggregation pipeline
+  // step 1: match the video id
+  // step 2: sort the document using createdAt field
+  // step 3: skip the document for page numbers // convert page and limit to number they are string
+  // step 4: apply limit to document
+
+  const { videoId } = req.params;
+  const { page = 1, limit = 10 } = req.query;
+
+  if (!isValidObjectId(videoId)) {
+    throw new ApiError(400, "Invalid video id");
+  }
+
+  const isVideoExists = await Comment.exists({
+    video: new mongoose.Types.ObjectId(videoId),
+  });
+
+  if (!isVideoExists) {
+    throw new ApiError(404, "video not found");
+  }
+
+  const comments = await Comment.aggregate([
+    {
+      $match: {
+        video: new mongoose.Types.ObjectId(videoId),
+      },
+    },
+    {
+      $sort: {
+        createdAt: -1,
+      },
+    },
+    {
+      $skip: (parseInt(page) - 1) * parseInt(limit),
+    },
+    {
+      $limit: parseInt(limit),
+    },
+  ]);
+
+  // since a video can have no comments we cannot use this condition
+  // if(!comments) { /* code */}
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, comments, "comments fetched successfully"));
+});
+
+export { addComment, updateComment, deleteComment, getVideoComments };
 
 // add comment to videos using
 // video.comments.push(newComment._id);
