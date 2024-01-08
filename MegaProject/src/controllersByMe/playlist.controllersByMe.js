@@ -2,6 +2,7 @@ import { isValidObjectId } from "mongoose";
 import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { Playlist } from "../modelsByMe/playlist.modelsByMe.js";
+import { Video } from "../models/video.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
 const createPlaylist = asyncHandler(async (req, res) => {
@@ -105,4 +106,55 @@ const getPlaylistById = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, playlist, "playlist fetched successfully"));
 });
 
-export { createPlaylist, getUserPlaylists, getPlaylistById };
+const addVideoToPlaylist = asyncHandler(async (req, res) => {
+  // Steps to add video to playlist
+  // take video and playlist id
+  // validate both of them
+  // from video database find video by id
+  // then verify if video exists
+  // use findByIdAndUpdate() method to add video
+  // validate it
+  // response
+
+  const { playlistId, videoId } = req.params;
+
+  if (!playlistId || !videoId) {
+    throw new ApiError(400, "All fields are required");
+  }
+
+  if (!isValidObjectId(playlistId) || !isValidObjectId(videoId)) {
+    throw new ApiError(400, "Invalid id");
+  }
+
+  const video = await Video.findById(videoId);
+
+  if (!video) {
+    throw new ApiError(404, "video not found");
+  }
+
+  const playlist = await Playlist.findByIdAndUpdate(
+    playlistId,
+    {
+      $push: {
+        videos: [videoId],
+      },
+    },
+    { new: true }
+  );
+
+  if (!playlist) {
+    throw new ApiError(404, "playlist not found");
+  }
+  console.log(playlist);
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, playlist, "playlist updated successfully"));
+});
+
+export {
+  createPlaylist,
+  getUserPlaylists,
+  getPlaylistById,
+  addVideoToPlaylist,
+};
