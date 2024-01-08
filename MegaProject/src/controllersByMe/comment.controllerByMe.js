@@ -173,3 +173,5 @@ export { addComment, updateComment, deleteComment, getVideoComments };
 // add comment to videos using
 // video.comments.push(newComment._id);
 // await video.save();
+// +++++++++++++++++++++++++++++++++++++++
+// paginate() method to use in getVideoComments

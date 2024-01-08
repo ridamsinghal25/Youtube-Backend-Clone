@@ -27,10 +27,12 @@ app.use("/api/v1/users", userRouter);
 import videoRouterByMe from "./routesByMe/video.routesByMe.js";
 import likeRouterByMe from "./routesByMe/like.routesByMe.js";
 import commentRouterByMe from "./routesByMe/comment.routesByMe.js";
+import playlistRouterByMe from "./routesByMe/playlist.routesByMe.js";
 
 // routes declaration defined by me
 app.use("/api/v1/videos-by-me", videoRouterByMe);
 app.use("/api/v1/likes-by-me", likeRouterByMe);
 app.use("/api/v1/comment-by-me", commentRouterByMe);
+app.use("/api/v1/playlist-by-me", playlistRouterByMe);
 
 export { app };
