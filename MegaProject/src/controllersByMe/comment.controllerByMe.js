@@ -133,9 +133,7 @@ const getVideoComments = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Invalid video id");
   }
 
-  const isVideoExists = await Comment.exists({
-    video: new mongoose.Types.ObjectId(videoId),
-  });
+  const isVideoExists = await Video.findById(videoId);
 
   if (!isVideoExists) {
     throw new ApiError(404, "video not found");
@@ -160,8 +158,11 @@ const getVideoComments = asyncHandler(async (req, res) => {
     },
   ]);
 
-  // since a video can have no comments we cannot use this condition
-  // if(!comments) { /* code */}
+  if (!comments.length == 0) {
+    return res
+      .status(200)
+      .json(new ApiResponse(200, {}, "video has no comments"));
+  }
 
   return res
     .status(200)
