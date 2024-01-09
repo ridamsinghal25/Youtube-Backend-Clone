@@ -236,7 +236,6 @@ const updatePlaylist = asyncHandler(async (req, res) => {
   if (!playlist) {
     throw new ApiError(404, "playlist not found");
   }
-  console.log(playlist);
 
   return res
     .status(200)

@@ -39,7 +39,6 @@ const registerUser = asyncHandler(async (req, res) => {
   // return response
 
   const { fullName, email, username, password } = req.body;
-  console.log("email: ", email);
 
   // if (fullName === "") {
   //   throw new ApiError(400, "fullName is required")
@@ -77,7 +76,7 @@ const registerUser = asyncHandler(async (req, res) => {
   }
 
   const avatar = await uploadOnCloudinary(avatarLocalPath);
-  console.log(avatar);
+
   const coverImage = await uploadOnCloudinary(coverImageLocalPath);
 
   if (!avatar) {
