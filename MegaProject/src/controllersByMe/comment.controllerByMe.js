@@ -96,10 +96,6 @@ const deleteComment = asyncHandler(async (req, res) => {
 
   const { commentId } = req.params;
 
-  if (!commentId) {
-    throw new ApiError(404, "comment id is required");
-  }
-
   if (!isValidObjectId(commentId)) {
     throw new ApiError(400, "Invalid comment id");
   }
@@ -171,8 +167,5 @@ const getVideoComments = asyncHandler(async (req, res) => {
 
 export { addComment, updateComment, deleteComment, getVideoComments };
 
-// add comment to videos using
-// video.comments.push(newComment._id);
-// await video.save();
 // +++++++++++++++++++++++++++++++++++++++
 // paginate() method to use in getVideoComments
