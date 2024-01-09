@@ -116,11 +116,10 @@ const getVideoComments = asyncHandler(async (req, res) => {
   // take videoId from req.params
   // take queries from req.query
   // use mongoose exists() to check if video exists
-  // Now, use mongodb aggregation pipeline
-  // step 1: match the video id
-  // step 2: sort the document using createdAt field
-  // step 3: skip the document for page numbers // convert page and limit to number they are string
-  // step 4: apply limit to document
+  // Now, define mongodb aggregation pipeline
+  // Use them in function called with
+  // modelName.aggregatePaginate(pipelineDefineAbove, {page, limit})
+  // options = {page,limit}
 
   const { videoId } = req.params;
   const { page = 1, limit = 10 } = req.query;
@@ -135,7 +134,12 @@ const getVideoComments = asyncHandler(async (req, res) => {
     throw new ApiError(404, "video not found");
   }
 
-  const comments = await Comment.aggregate([
+  const options = {
+    page,
+    limit,
+  };
+
+  const aggregationPipeline = Comment.aggregate([
     {
       $match: {
         video: new mongoose.Types.ObjectId(videoId),
@@ -146,15 +150,11 @@ const getVideoComments = asyncHandler(async (req, res) => {
         createdAt: -1,
       },
     },
-    {
-      $skip: (parseInt(page) - 1) * parseInt(limit),
-    },
-    {
-      $limit: parseInt(limit),
-    },
   ]);
 
-  if (!comments.length == 0) {
+  const results = await Comment.aggregatePaginate(aggregationPipeline, options);
+
+  if (results.totalDocs === 0) {
     return res
       .status(200)
       .json(new ApiResponse(200, {}, "video has no comments"));
@@ -162,10 +162,7 @@ const getVideoComments = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(200, comments, "comments fetched successfully"));
+    .json(new ApiResponse(200, results, "comments fetched successfully"));
 });
 
 export { addComment, updateComment, deleteComment, getVideoComments };
-
-// +++++++++++++++++++++++++++++++++++++++
-// paginate() method to use in getVideoComments
