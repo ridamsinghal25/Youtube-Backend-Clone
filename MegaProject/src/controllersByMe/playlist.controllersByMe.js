@@ -22,10 +22,6 @@ const createPlaylist = asyncHandler(async (req, res) => {
     throw new ApiError(400, "All fields are required");
   }
 
-  if (!videoId) {
-    throw new ApiError(400, "video id is required");
-  }
-
   if (!isValidObjectId(videoId) || !isValidObjectId(userId)) {
     throw new ApiError(400, "Invalid id");
   }
@@ -56,10 +52,6 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
 
   const { userId } = req.params;
 
-  if (!userId) {
-    throw new ApiError(400, "user id is required");
-  }
-
   if (!isValidObjectId(userId)) {
     throw new ApiError(400, "Invalid user id");
   }
@@ -87,10 +79,6 @@ const getPlaylistById = asyncHandler(async (req, res) => {
 
   const { playlistId } = req.params;
 
-  if (!playlistId) {
-    throw new ApiError(400, "playlist id is required");
-  }
-
   if (!isValidObjectId(playlistId)) {
     throw new ApiError(400, "Invalid playlist id");
   }
@@ -117,10 +105,6 @@ const addVideoToPlaylist = asyncHandler(async (req, res) => {
   // response
 
   const { playlistId, videoId } = req.params;
-
-  if (!playlistId || !videoId) {
-    throw new ApiError(400, "All fields are required");
-  }
 
   if (!isValidObjectId(playlistId) || !isValidObjectId(videoId)) {
     throw new ApiError(400, "Invalid id");
@@ -163,10 +147,6 @@ const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
 
   const { playlistId, videoId } = req.params;
 
-  if (!playlistId || !videoId) {
-    throw new ApiError(400, "All fields are required");
-  }
-
   if (!isValidObjectId(playlistId) || !isValidObjectId(videoId)) {
     throw new ApiError(400, "Invalid id");
   }
@@ -196,10 +176,35 @@ const removeVideoFromPlaylist = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "video deleted successfully"));
 });
 
+const deletePlaylist = asyncHandler(async (req, res) => {
+  // Steps to delete a playlist
+  // take a playlist id from req.params
+  // validate it
+  // use findByIdAndDelete() method
+  // response
+
+  const { playlistId } = req.params;
+
+  if (!isValidObjectId(playlistId)) {
+    throw new ApiError(400, "Invalid id");
+  }
+
+  const playlist = await Playlist.findByIdAndDelete(playlistId);
+
+  if (!playlist) {
+    throw new ApiError(404, "playlist not found");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "playlist deleted successfully"));
+});
+
 export {
   createPlaylist,
   getUserPlaylists,
   getPlaylistById,
   addVideoToPlaylist,
   removeVideoFromPlaylist,
+  deletePlaylist,
 };
