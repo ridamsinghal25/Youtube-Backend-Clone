@@ -1,4 +1,4 @@
-import { isValidObjectId } from "mongoose";
+import mongoose, { isValidObjectId } from "mongoose";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { Subscription } from "../models/subscription.model.js";
@@ -61,4 +61,69 @@ const toggleSubscription = asyncHandler(async (req, res) => {
   }
 });
 
-export { toggleSubscription };
+const getUserChannelSubscriber = asyncHandler(async (req, res) => {
+  // Steps to get user channel subscriber
+  // take channel id from req.params
+  // validate it
+  // Now, in database find all documents with the channelId
+  // use aggregation pipeline
+  // response
+
+  const { channelId } = req.params;
+
+  if (!isValidObjectId(channelId)) {
+    throw new ApiError(400, "Invalid channel id");
+  }
+
+  const subscribers = await Subscription.aggregate([
+    {
+      $match: {
+        channel: new mongoose.Types.ObjectId(channelId),
+      },
+    },
+    {
+      $lookup: {
+        from: "users",
+        localField: "subscriber",
+        foreignField: "_id",
+        as: "subscriberInfo",
+        pipeline: [
+          {
+            $project: {
+              fullName: 1,
+              username: 1,
+              avatar: 1,
+            },
+          },
+        ],
+      },
+    },
+    {
+      $addFields: {
+        subscriberInfo: {
+          $first: "$subscriberInfo",
+        },
+      },
+    },
+  ]);
+
+  if (subscribers.length === 0) {
+    return res
+      .status(200)
+      .json(new ApiResponse(200, {}, "channel has no subscriber"));
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        subscribers,
+        "channel subscribers fetched successfully"
+      )
+    );
+});
+
+export { toggleSubscription, getUserChannelSubscriber };
+
+// check getUserChannelSubscriber aggregation pipeline
