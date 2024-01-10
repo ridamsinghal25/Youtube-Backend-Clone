@@ -304,4 +304,3 @@ export {
 };
 
 // getVideoDetails aggregation pipeline $addFields(owner)
-// updateVideoThumbnail 2 database query
