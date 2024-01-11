@@ -297,10 +297,95 @@ const updateVideoThumbnail = asyncHandler(async (req, res) => {
     );
 });
 
+const getAllVideo = asyncHandler(async (req, res) => {
+  // Steps to get all video
+  // take all required information from req.query
+  // Now, validate all fields to check they are not empty
+  /* sortBy -> tells by which field to sort (eg. title, description, etc)
+   * sortType -> tells two options ascending(asc) or descending(desc)
+   */
+  // Now, use mongodb aggregation pipeline
+  // 1. $match using $and operator both the query and userId
+  // 2. sort order taken from the req.query
+  // 3. use mongodb aggregate paginate
+
+  const { page = 1, limit = 10, query, sortBy, sortType, userId } = req.query;
+
+  if (!isValidObjectId(userId)) {
+    throw new ApiError(400, "Invalid user id");
+  }
+
+  if (!query || !sortBy || !sortType) {
+    throw new ApiError(404, "All fields are required");
+  }
+
+  const userExists = await User.findById(userId);
+
+  if (!userExists) {
+    throw new ApiError(404, "user not found");
+  }
+
+  console.log(typeof parseInt(page));
+
+  const options = {
+    page: parseInt(page),
+    limit: parseInt(limit),
+  };
+  console.log(" fhdfh", typeof options.page);
+  // create sortOptions
+  let sortOptions = {};
+
+  /* Here, if sortBy exists  then it set sortOptions property to sortBy using [] bracket notation
+   *  and its value is set using ternary operation that says if sortType === desc then
+   *  set sortOptions[sortBy] to -1 else 1
+   *
+   * You can also write the below condition like this
+   *
+   *    let sortOptions = {
+   *        [sortBy]: sortType === 'desc' ? -1 : 1
+   *    }
+   */
+  if (sortBy) {
+    sortOptions[sortBy] = sortType === "desc" ? -1 : 1;
+  }
+
+  const videoAggregationPipeline = Video.aggregate([
+    {
+      $match: {
+        owner: new mongoose.Types.ObjectId(userId),
+
+        // title: { $regex: new RegExp(query, "i") },
+        title: { $regex: query, $options: "i" },
+      },
+    },
+    {
+      $sort: sortOptions,
+    },
+  ]);
+
+  // console.log("userId:", userId);
+  // console.log("query:", query);
+  // console.log("pipeline:", JSON.stringify(videoAggregationPipeline));
+
+  const resultedVideo = await Video.aggregatePaginate(
+    videoAggregationPipeline,
+    options
+  );
+  // console.log("resulted video", resultedVideo);
+  // if (resultedVideo.totalDocs === 0) {
+  //   return res.status(200).json(new ApiResponse(200, {}, "user has no video"));
+  // }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, resultedVideo, "video fetched successfully"));
+});
+
 export {
   uploadVideo,
   deleteVideo,
   updateVideoDetails,
   getVideoDetails,
   updateVideoThumbnail,
+  getAllVideo,
 };
