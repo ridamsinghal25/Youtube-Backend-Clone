@@ -3,6 +3,7 @@ import { verifyJWT } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
 import {
   deleteVideo,
+  getAllVideo,
   getVideoDetails,
   updateVideoDetails,
   updateVideoThumbnail,
@@ -35,5 +36,7 @@ router.route("/video-details/:videoId").get(verifyJWT, getVideoDetails);
 router
   .route("/update-video-thumbnail/:videoId")
   .patch(verifyJWT, upload.single("thumbnail"), updateVideoThumbnail);
+
+router.route("/").get(verifyJWT, getAllVideo);
 
 export default router;

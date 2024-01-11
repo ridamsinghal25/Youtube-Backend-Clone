@@ -5,8 +5,9 @@ import {
   uploadOnCloudinary,
 } from "../utils/cloudinary.js";
 import { Video } from "../models/video.model.js";
+import { User } from "../models/user.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
-import mongoose from "mongoose";
+import mongoose, { isValidObjectId } from "mongoose";
 
 // Upload Video
 // Delete Video
@@ -87,8 +88,8 @@ const deleteVideo = asyncHandler(async (req, res) => {
 
   const videoId = req.params.videoId;
 
-  if (!videoId) {
-    throw new ApiError(400, "video id is required");
+  if (!isValidObjectId(videoId)) {
+    throw new ApiError(400, "Invalid video id");
   }
 
   const deletedVideo = await Video.findById(videoId);
@@ -117,7 +118,9 @@ const deleteVideo = asyncHandler(async (req, res) => {
 
   const deletemsg = await deletedVideo.deleteOne();
 
-  console.log("deleted: ", deletemsg);
+  if (!deletemsg) {
+    throw new ApiError(400, "Error while deleting video");
+  }
 
   return res
     .status(200)
@@ -137,8 +140,8 @@ const updateVideoDetails = asyncHandler(async (req, res) => {
   const videoId = req.params.videoId;
   const { title, description } = req.body;
 
-  if (!videoId) {
-    throw new ApiError(400, "videoId is required");
+  if (!isValidObjectId(videoId)) {
+    throw new ApiError(400, "Invalid video id");
   }
 
   if (!title || !description) {
@@ -175,8 +178,8 @@ const getVideoDetails = asyncHandler(async (req, res) => {
 
   const videoId = req.params.videoId;
 
-  if (!videoId) {
-    throw new ApiError(400, "videoId is required");
+  if (!isValidObjectId(videoId)) {
+    throw new ApiError(400, "Invalid video id");
   }
 
   let videoDetails = await Video.aggregate([
@@ -215,7 +218,6 @@ const getVideoDetails = asyncHandler(async (req, res) => {
   if (!videoDetails) {
     throw new ApiError(404, "video not found");
   }
-  console.log("videoDetails: ", videoDetails);
 
   return res
     .status(200)
@@ -238,8 +240,8 @@ const updateVideoThumbnail = asyncHandler(async (req, res) => {
 
   const videoId = req.params.videoId;
 
-  if (!videoId) {
-    throw new ApiError(400, "video id is required");
+  if (!isValidObjectId(videoId)) {
+    throw new ApiError(400, "Invalid video id");
   }
 
   const thumbnailLocalPath = req.file?.path;
@@ -302,5 +304,3 @@ export {
   getVideoDetails,
   updateVideoThumbnail,
 };
-
-// getVideoDetails aggregation pipeline $addFields(owner)

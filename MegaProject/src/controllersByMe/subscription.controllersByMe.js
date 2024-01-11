@@ -22,6 +22,12 @@ const toggleSubscription = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Invalid id");
   }
 
+  const channelExists = await User.findById(channelId);
+
+  if (!channelExists) {
+    throw new ApiError(404, "channel not found");
+  }
+
   const subscription = await Subscription.findOne({
     subscriber: userId,
     channel: channelId,
@@ -204,5 +210,3 @@ const getSubscribedChannels = asyncHandler(async (req, res) => {
 });
 
 export { toggleSubscription, getUserChannelSubscriber, getSubscribedChannels };
-
-// check getUserChannelSubscriber aggregation pipeline
