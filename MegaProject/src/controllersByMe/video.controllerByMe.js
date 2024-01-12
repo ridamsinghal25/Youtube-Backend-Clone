@@ -384,6 +384,52 @@ const getAllVideo = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, resultedVideo, "video fetched successfully"));
 });
 
+const togglePublishStatus = asyncHandler(async (req, res) => {
+  // steps to toggle publish status
+  // take video id from req.params
+  // validate it and find if exists
+  // store video.isPublished into variable and apply if condition on it
+  // if not exists unpublish it
+  // else publish it
+  // response
+
+  const { videoId } = req.params;
+
+  if (!isValidObjectId(videoId)) {
+    throw new ApiError(400, "Invalid video id");
+  }
+
+  const video = await Video.findById(videoId);
+
+  if (!video) {
+    throw new ApiError(404, "video not found");
+  }
+
+  let videoPublishStatus = video.isPublished;
+
+  if (!videoPublishStatus) {
+    video.isPublished = true;
+  } else {
+    video.isPublished = false;
+  }
+
+  const updatedVideo = await video.save();
+
+  if (!updatedVideo) {
+    throw new ApiError(400, "error while updating video");
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        updatedVideo,
+        "video publish status updated successfully"
+      )
+    );
+});
+
 export {
   uploadVideo,
   deleteVideo,
@@ -391,4 +437,5 @@ export {
   getVideoDetails,
   updateVideoThumbnail,
   getAllVideo,
+  togglePublishStatus,
 };

@@ -5,6 +5,7 @@ import {
   deleteVideo,
   getAllVideo,
   getVideoDetails,
+  togglePublishStatus,
   updateVideoDetails,
   updateVideoThumbnail,
   uploadVideo,
@@ -30,6 +31,8 @@ router.route("/upload-video/").post(
 router.route("/delete-video/:videoId").delete(verifyJWT, deleteVideo);
 
 router.route("/update-video/:videoId").patch(verifyJWT, updateVideoDetails);
+
+router.route("/publish-status/:videoId").patch(verifyJWT, togglePublishStatus);
 
 router.route("/video-details/:videoId").get(verifyJWT, getVideoDetails);
 
