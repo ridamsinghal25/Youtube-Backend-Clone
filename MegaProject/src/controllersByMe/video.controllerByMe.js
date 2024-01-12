@@ -352,10 +352,17 @@ const getAllVideo = asyncHandler(async (req, res) => {
   const videoAggregationPipeline = Video.aggregate([
     {
       $match: {
-        owner: new mongoose.Types.ObjectId(userId),
-
-        // title: { $regex: new RegExp(query, "i") },
-        title: { $regex: query, $options: "i" },
+        $and: [
+          {
+            owner: new mongoose.Types.ObjectId(userId),
+          },
+          {
+            title: {
+              $regex: query,
+              $options: "i",
+            },
+          },
+        ],
       },
     },
     {
@@ -363,18 +370,14 @@ const getAllVideo = asyncHandler(async (req, res) => {
     },
   ]);
 
-  // console.log("userId:", userId);
-  // console.log("query:", query);
-  // console.log("pipeline:", JSON.stringify(videoAggregationPipeline));
-
   const resultedVideo = await Video.aggregatePaginate(
     videoAggregationPipeline,
     options
   );
-  // console.log("resulted video", resultedVideo);
-  // if (resultedVideo.totalDocs === 0) {
-  //   return res.status(200).json(new ApiResponse(200, {}, "user has no video"));
-  // }
+
+  if (resultedVideo.totalDocs === 0) {
+    return res.status(200).json(new ApiResponse(200, {}, "user has no video"));
+  }
 
   return res
     .status(200)
