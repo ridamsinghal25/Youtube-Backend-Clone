@@ -29,6 +29,7 @@ import likeRouterByMe from "./routesByMe/like.routesByMe.js";
 import commentRouterByMe from "./routesByMe/comment.routesByMe.js";
 import playlistRouterByMe from "./routesByMe/playlist.routesByMe.js";
 import subscriptionRoutesByMe from "./routesByMe/subscription.routesByMe.js";
+import dashboardRoutesByMe from "./routesByMe/dashboard.routesByMe.js";
 
 // routes declaration defined by me
 app.use("/api/v1/videos-by-me", videoRouterByMe);
@@ -36,5 +37,6 @@ app.use("/api/v1/likes-by-me", likeRouterByMe);
 app.use("/api/v1/comment-by-me", commentRouterByMe);
 app.use("/api/v1/playlist-by-me", playlistRouterByMe);
 app.use("/api/v1/subscription-by-me", subscriptionRoutesByMe);
+app.use("/api/v1/dashboard-by-me", dashboardRoutesByMe);
 
 export { app };
