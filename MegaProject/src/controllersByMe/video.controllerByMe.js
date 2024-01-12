@@ -168,12 +168,13 @@ const updateVideoDetails = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, video, "video updated successfully"));
 });
 
-const getVideoDetails = asyncHandler(async (req, res) => {
+const getVideoById = asyncHandler(async (req, res) => {
   // Steps to get video details
   // take videoId of the video
   // validate it
   // find video using findById() method
   // validate it
+  // use mongodb aggregation pipeline
   // response
 
   const videoId = req.params.videoId;
@@ -182,10 +183,28 @@ const getVideoDetails = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Invalid video id");
   }
 
+  const video = await Video.findById(videoId);
+
+  if (!video) {
+    throw new ApiError(404, "video not found");
+  }
+
+  video.views = video.views + 1;
+
+  await video.save();
+
   let videoDetails = await Video.aggregate([
     {
       $match: {
         _id: new mongoose.Types.ObjectId(videoId),
+      },
+    },
+    {
+      $lookup: {
+        from: "subscriptions",
+        localField: "owner",
+        foreignField: "channel",
+        as: "subscriberCount",
       },
     },
     {
@@ -210,6 +229,16 @@ const getVideoDetails = asyncHandler(async (req, res) => {
       $addFields: {
         owner: {
           $first: "$owner",
+        },
+        subscriberCount: {
+          $size: "$subscriberCount",
+        },
+        isSubscribed: {
+          $cond: {
+            if: { $in: [req.user._id, "$subscriberCount.subscriber"] },
+            then: true,
+            else: false,
+          },
         },
       },
     },
@@ -434,7 +463,7 @@ export {
   uploadVideo,
   deleteVideo,
   updateVideoDetails,
-  getVideoDetails,
+  getVideoById,
   updateVideoThumbnail,
   getAllVideo,
   togglePublishStatus,

@@ -4,7 +4,7 @@ import { upload } from "../middlewares/multer.middleware.js";
 import {
   deleteVideo,
   getAllVideo,
-  getVideoDetails,
+  getVideoById,
   togglePublishStatus,
   updateVideoDetails,
   updateVideoThumbnail,
@@ -34,7 +34,7 @@ router.route("/update-video/:videoId").patch(verifyJWT, updateVideoDetails);
 
 router.route("/publish-status/:videoId").patch(verifyJWT, togglePublishStatus);
 
-router.route("/video-details/:videoId").get(verifyJWT, getVideoDetails);
+router.route("/video-details/:videoId").get(verifyJWT, getVideoById);
 
 router
   .route("/update-video-thumbnail/:videoId")
