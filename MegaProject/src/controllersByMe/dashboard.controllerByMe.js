@@ -54,6 +54,12 @@ const getChannelStats = asyncHandler(async (req, res) => {
     subscribersCount,
   };
 
+  if (totalVideoAndViews.length === 0) {
+    return res
+      .status(200)
+      .json(new ApiResponse(200, {}, "No content on this channel"));
+  }
+
   return res
     .status(200)
     .json(
@@ -61,4 +67,32 @@ const getChannelStats = asyncHandler(async (req, res) => {
     );
 });
 
-export { getChannelStats };
+const getChannelVideo = asyncHandler(async (req, res) => {
+  // steps to get channel video
+  // store userId in the variable
+  // use $match operator in Video model to match all user video
+  // use $project operator to get only selected information
+  // response
+
+  const userId = req.user._id;
+
+  const videos = await Video.aggregate([
+    {
+      $match: {
+        owner: new mongoose.Types.ObjectId(userId),
+      },
+    },
+  ]);
+
+  if (videos.length === 0) {
+    return res
+      .status(200)
+      .json(new ApiResponse(200, {}, "user has not uploaded any video"));
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, videos, "channel videos fetched successfully"));
+});
+
+export { getChannelStats, getChannelVideo };
