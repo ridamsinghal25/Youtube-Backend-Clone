@@ -209,6 +209,14 @@ const getVideoById = asyncHandler(async (req, res) => {
     },
     {
       $lookup: {
+        from: "comments",
+        localField: "_id",
+        foreignField: "video",
+        as: "videoComments",
+      },
+    },
+    {
+      $lookup: {
         from: "users",
         localField: "owner",
         foreignField: "_id",
@@ -240,10 +248,13 @@ const getVideoById = asyncHandler(async (req, res) => {
             else: false,
           },
         },
+        totalComments: {
+          $size: "$videoComments",
+        },
       },
     },
   ]);
-
+  console.log(videoDetails);
   if (!videoDetails) {
     throw new ApiError(404, "video not found");
   }
