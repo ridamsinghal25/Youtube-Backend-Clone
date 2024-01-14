@@ -166,23 +166,47 @@ const toggleTweetLike = asyncHandler(async (req, res) => {
 });
 
 const getLikedVideos = asyncHandler(async (req, res) => {
-  // steps to get liked videos
-  //
+  // steps to get liked videos by user
+  //store userId in a variable
+  // apply mongodb aggregation pipeline
+  // 1. $match : owner and video
+  // validate it
+  // response
 
-  const likedVideoIds = await Like.distinct("video");
+  const userId = req.user._id;
 
-  const likedVideos = await Video.aggregate([
+  const likedVideos = await Like.aggregate([
     {
       $match: {
-        _id: {
-          $in: likedVideoIds.map(
-            (videoId) => new mongoose.Types.ObjectId(videoId)
-          ),
+        likedBy: userId,
+        video: {
+          $exists: true,
+        },
+      },
+    },
+    {
+      $lookup: {
+        from: "videos",
+        localField: "video",
+        foreignField: "_id",
+        as: "videoDetails",
+      },
+    },
+    {
+      $addFields: {
+        videoDetails: {
+          $first: "$videoDetails",
         },
       },
     },
   ]);
-  console.log("likedVideos: ", likedVideos);
+
+  if (likedVideos.length === 0) {
+    return res
+      .status(200)
+      .json(new ApiResponse(200, {}, "user has not liked any video"));
+  }
+
   return res
     .status(200)
     .json(
