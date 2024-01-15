@@ -9,12 +9,6 @@ import { User } from "../models/user.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import mongoose, { isValidObjectId } from "mongoose";
 
-// Upload Video
-// Delete Video
-// Update Video
-// Get Video Details
-// Update Video Thumbnail
-
 const uploadVideo = asyncHandler(async (req, res) => {
   // steps to upload video
   // take video details
@@ -50,8 +44,6 @@ const uploadVideo = asyncHandler(async (req, res) => {
   if (!videoFile || !thumbnail) {
     throw new ApiError(400, "Error while uploading on cloudinary");
   }
-  // console.log("videoFile: ", videoFile);
-  // console.log("thumbnail: ", thumbnail);
 
   const video = await Video.create({
     videoFile: {
@@ -160,7 +152,7 @@ const updateVideoDetails = asyncHandler(async (req, res) => {
   );
 
   if (!video) {
-    throw new ApiError(400, "Error while updating video");
+    throw new ApiError(400, "video not found");
   }
 
   return res
@@ -254,7 +246,7 @@ const getVideoById = asyncHandler(async (req, res) => {
       },
     },
   ]);
-  console.log(videoDetails);
+
   if (!videoDetails) {
     throw new ApiError(404, "video not found");
   }
@@ -365,13 +357,11 @@ const getAllVideo = asyncHandler(async (req, res) => {
     throw new ApiError(404, "user not found");
   }
 
-  console.log(typeof parseInt(page));
-
   const options = {
     page: parseInt(page),
     limit: parseInt(limit),
   };
-  console.log(" fhdfh", typeof options.page);
+
   // create sortOptions
   let sortOptions = {};
 
