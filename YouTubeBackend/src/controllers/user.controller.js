@@ -223,7 +223,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     process.env.REFRESH_TOKEN_SECRET
   );
 
-  const user = await User.findById(decodedToken._id); // ? optional chaining
+  const user = await User.findById(decodedToken?._id); // ? optional chaining
 
   if (!user) {
     throw new ApiError(404, "Invalid refresh token");
@@ -238,18 +238,17 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     secure: true,
   };
 
-  const { accessToken, newRefreshToken } = generateAccessTokenAndRefreshToken(
-    user._id
-  );
+  const { accessToken, refreshToken } =
+    await generateAccessTokenAndRefreshToken(user._id);
 
   return res
     .status(200)
     .cookie("accessToken", accessToken, options)
-    .cookie("refreshToken", newRefreshToken, options)
+    .cookie("refreshToken", refreshToken, options)
     .json(
       new ApiResponse(
         200,
-        { accessToken, refreshToken: newRefreshToken },
+        { accessToken, refreshToken },
         "Access Token refreshed"
       )
     );
@@ -304,6 +303,8 @@ const getCurrentUserDetails = asyncHandler(async (req, res) => {
   // we will run verifyJWT middleware before routing it so
   // from there we will get the user object
 
+  const user = req.user;
+
   return res
     .status(200)
     .json(new ApiResponse(200, user, "user fetched successfully"));
@@ -325,7 +326,7 @@ const updateUserAccountDetails = asyncHandler(async (req, res) => {
     throw new ApiError(400, "All fields are required");
   }
 
-  await User.findByIdAndUpdate(
+  const user = await User.findByIdAndUpdate(
     req.user?._id,
     {
       $set: {
