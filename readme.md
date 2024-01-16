@@ -7,6 +7,7 @@ Welcome to the YouTube Backend Clone project! This comprehensive backend applica
 1. [Introduction](#introduction)
 2. [Technologies Used](#technologies-used)
 3. [Features](#features)
+4. [Postman Collection](#postman-collection)
 
 ## Introduction
 
@@ -46,3 +47,9 @@ Enables users to leave comments, reply to comments, and engage in discussions ar
 Lets users create and manage personalized playlists, enhancing the user experience by organizing and accessing favorite content easily.
 
 These features collectively form a robust backend system for the YouTube Backend Clone, ensuring efficient development, maintenance, and scalability.
+
+## Postman Collection
+
+Explore the Postman Collection for our YouTube Backend Clone.
+
+[Postman Collection](https://documenter.getpostman.com/view/30187103/2s9YsQ89eg)
